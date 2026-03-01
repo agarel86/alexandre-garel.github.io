@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data — Alexandre Garel</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.data-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-bdr);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  height: 100%;
+  transition: border-color .22s, transform .22s;
+}
+.data-card:hover {
+  border-color: rgba(0,229,204,.3);
+  transform: translateY(-3px);
+}
+
+.data-card-vis {
+  height: 130px; flex-shrink: 0; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #081520 0%, #0b1e2d 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.data-card-vis svg { width: 100%; height: 100%; }
+
+.data-card-body {
+  padding: 22px 24px 24px;
+  flex: 1; display: flex; flex-direction: column;
+}
+
+.data-badge {
+  font-size: 9.5px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 8px; flex-shrink: 0;
+}
+.data-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 700; color: var(--white);
+  line-height: 1.25; margin-bottom: 12px; flex-shrink: 0;
+}
+.data-desc {
+  font-size: 13px; line-height: 1.75;
+  color: rgba(221,229,240,.65);
+  flex: 1;
+  text-align: justify;
+  margin-bottom: 0;
+}
+.data-source {
+  font-size: 11px; line-height: 1.55;
+  color: var(--muted);
+  margin-top: 16px; margin-bottom: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,229,204,.07);
+  font-style: italic;
+  flex-shrink: 0;
+}
+.data-download {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; letter-spacing: .5px;
+  font-family: 'Space Grotesk', sans-serif;
+  border: 1px solid var(--teal); color: var(--teal); background: transparent;
+  text-decoration: none;
+  transition: background .2s;
+  align-self: flex-start;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+.data-download:hover { background: rgba(0,229,204,.1); }
+
+.intro-note {
+  font-size: 14px; line-height: 1.75;
+  color: rgba(221,229,240,.7);
+  margin-bottom: 40px; max-width: 720px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="index.html">Alexandre <span>Garel</span></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Main</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="publications.html">Publications</a></li>
+    <li><a href="working-papers.html">Working Papers</a></li>
+    <li><a href="press-coverage.html">Press</a></li>
+    <li><a href="data.html" class="active">Data</a></li>
+    <li><a href="teaching.html">Teaching</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="index.html" class="nav-home">⌂ Main</a>
+    <a href="#" class="nav-btn">CV</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="sec-header">
+    <div class="sec-eyebrow">Open Access Datasets</div>
+    <h1 class="sec-title">Data</h1>
+    <div class="sec-rule"></div>
+  </div>
+
+  <p class="intro-note">The following datasets are made publicly available to support open science and reproducibility in empirical finance research. They accompany peer-reviewed publications and may be freely used with appropriate citation.</p>
+
+  <div class="data-grid">
+
+    <!-- Dataset 1: Corporate Biodiversity Footprint -->
+    <div class="data-card">
+      <div class="data-card-vis">
+        <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="dv1" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#e8b84b" stop-opacity=".2"/>
+              <stop offset="100%" stop-color="#e8b84b" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="150" cy="60" rx="130" ry="55" fill="url(#dv1)"/>
+          <!-- hexagon clusters -->
+          <polygon points="80,40 92,33 104,40 104,54 92,61 80,54" fill="none" stroke="#e8b84b" stroke-width=".8" stroke-opacity=".5"/>
+          <circle cx="92" cy="47" r="3" fill="#e8b84b" fill-opacity=".7"/>
+          <polygon points="110,58 122,51 134,58 134,72 122,79 110,72" fill="none" stroke="#e8b84b" stroke-width=".7" stroke-opacity=".4"/>
+          <circle cx="122" cy="65" r="2.5" fill="#e8b84b" fill-opacity=".6"/>
+          <polygon points="150,36 162,29 174,36 174,50 162,57 150,50" fill="none" stroke="#e8b84b" stroke-width=".8" stroke-opacity=".5"/>
+          <circle cx="162" cy="43" r="3" fill="#e8b84b" fill-opacity=".65"/>
+          <polygon points="180,60 192,53 204,60 204,74 192,81 180,74" fill="none" stroke="#e8b84b" stroke-width=".7" stroke-opacity=".4"/>
+          <circle cx="192" cy="67" r="2.5" fill="#e8b84b" fill-opacity=".6"/>
+          <!-- connecting lines -->
+          <line x1="104" y1="47" x2="110" y2="65" stroke="#e8b84b" stroke-width=".5" stroke-opacity=".25"/>
+          <line x1="134" y1="65" x2="150" y2="43" stroke="#e8b84b" stroke-width=".5" stroke-opacity=".25"/>
+          <line x1="174" y1="43" x2="180" y2="67" stroke="#e8b84b" stroke-width=".5" stroke-opacity=".25"/>
+          <!-- label -->
+          <text x="150" y="105" fill="#e8b84b" font-size="8" font-family="Space Grotesk" text-anchor="middle" fill-opacity=".45" letter-spacing="1">BIODIVERSITY FOOTPRINT</text>
+        </svg>
+      </div>
+      <div class="data-card-body">
+        <div class="data-badge">Open Access · Industry-Country Level</div>
+        <div class="data-name">Corporate Biodiversity Footprint</div>
+        <div class="data-desc">Mean CBF from IDL at the industry-country level. Based on an international sample of 2,106 listed firms from 34 countries over the years 2018–2021.</div>
+        <div class="data-source">Source: Garel, A., Romec, A., Sautner, Z., &amp; Wagner, A. F. (2024). Do investors care about biodiversity? <em>Review of Finance</em>, 28(4), 1151–1186.</div>
+        <a href="https://www.dropbox.com/scl/fi/mz6zz944jlba6tw0gedg7/Country-Industry-Average-CBF-values.xlsx?rlkey=hlokv6zffwnpjshs3bx30uhtp&dl=0" target="_blank" class="data-download">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download (.xlsx)
+        </a>
+      </div>
+    </div>
+
+    <!-- Dataset 2: Employee Demographic Diversity -->
+    <div class="data-card">
+      <div class="data-card-vis">
+        <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="dv2" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#00e5cc" stop-opacity=".2"/>
+              <stop offset="100%" stop-color="#00e5cc" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="150" cy="60" rx="130" ry="55" fill="url(#dv2)"/>
+          <!-- people silhouettes as circles -->
+          <circle cx="80"  cy="48" r="10" fill="none" stroke="#00e5cc" stroke-width=".9" stroke-opacity=".5"/>
+          <circle cx="80"  cy="48" r="5"  fill="#00e5cc" fill-opacity=".25"/>
+          <circle cx="115" cy="42" r="10" fill="none" stroke="#00e5cc" stroke-width=".9" stroke-opacity=".5"/>
+          <circle cx="115" cy="42" r="5"  fill="#00e5cc" fill-opacity=".22"/>
+          <circle cx="150" cy="38" r="12" fill="none" stroke="#00e5cc" stroke-width="1.1" stroke-opacity=".6"/>
+          <circle cx="150" cy="38" r="6"  fill="#00e5cc" fill-opacity=".3"/>
+          <circle cx="185" cy="42" r="10" fill="none" stroke="#00e5cc" stroke-width=".9" stroke-opacity=".5"/>
+          <circle cx="185" cy="42" r="5"  fill="#00e5cc" fill-opacity=".22"/>
+          <circle cx="220" cy="48" r="10" fill="none" stroke="#00e5cc" stroke-width=".9" stroke-opacity=".5"/>
+          <circle cx="220" cy="48" r="5"  fill="#00e5cc" fill-opacity=".25"/>
+          <!-- connection arcs -->
+          <path d="M90,48 Q115,30 115,42" fill="none" stroke="#00e5cc" stroke-width=".5" stroke-opacity=".2"/>
+          <path d="M125,42 Q140,25 150,38" fill="none" stroke="#00e5cc" stroke-width=".5" stroke-opacity=".2"/>
+          <path d="M162,38 Q175,25 185,42" fill="none" stroke="#00e5cc" stroke-width=".5" stroke-opacity=".2"/>
+          <path d="M195,42 Q210,30 220,48" fill="none" stroke="#00e5cc" stroke-width=".5" stroke-opacity=".2"/>
+          <!-- diversity bars -->
+          <rect x="68"  y="65" width="24" height="8" rx="1" fill="#00e5cc" fill-opacity=".35"/>
+          <rect x="103" y="62" width="24" height="11" rx="1" fill="#00e5cc" fill-opacity=".3"/>
+          <rect x="138" y="58" width="24" height="15" rx="1" fill="#00e5cc" fill-opacity=".4"/>
+          <rect x="173" y="62" width="24" height="11" rx="1" fill="#00e5cc" fill-opacity=".3"/>
+          <rect x="208" y="65" width="24" height="8" rx="1" fill="#00e5cc" fill-opacity=".35"/>
+          <text x="150" y="105" fill="#00e5cc" font-size="8" font-family="Space Grotesk" text-anchor="middle" fill-opacity=".4" letter-spacing="1">EMPLOYEE DIVERSITY</text>
+        </svg>
+      </div>
+      <div class="data-card-body">
+        <div class="data-badge">Open Access · Firm Level · US</div>
+        <div class="data-name">Employee Demographic Diversity</div>
+        <div class="data-desc">Employee demographic diversity at the firm level for a sample of 2,269 unique US firms over 2000–2021, covering age, gender, and ethnicity dimensions.</div>
+        <div class="data-source">Source: Frijns, B., Garel, A., &amp; Liao, S. (2024). Employee demographic diversity and firm performance. <em>Financial Management</em>. Forthcoming.</div>
+        <a href="https://osf.io/6j7nc/?view_only=c38d2ba35ee845138619bcec6ad1d898" target="_blank" class="data-download">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download (OSF)
+        </a>
+      </div>
+    </div>
+
+    <!-- Dataset 3: Firm-Level Nature Dependence -->
+    <div class="data-card">
+      <div class="data-card-vis">
+        <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="dv3" cx="40%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#00e5cc" stop-opacity=".18"/>
+              <stop offset="100%" stop-color="#00e5cc" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="dv3b" cx="70%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#e8b84b" stop-opacity=".15"/>
+              <stop offset="100%" stop-color="#e8b84b" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="120" cy="60" rx="100" ry="50" fill="url(#dv3)"/>
+          <ellipse cx="195" cy="60" rx="80"  ry="45" fill="url(#dv3b)"/>
+          <!-- globe grid lines -->
+          <ellipse cx="150" cy="60" rx="55" ry="50" fill="none" stroke="#00e5cc" stroke-width=".5" stroke-opacity=".2"/>
+          <ellipse cx="150" cy="60" rx="30" ry="50" fill="none" stroke="#00e5cc" stroke-width=".4" stroke-opacity=".15"/>
+          <line x1="95" y1="60" x2="205" y2="60" stroke="#00e5cc" stroke-width=".4" stroke-opacity=".15"/>
+          <ellipse cx="150" cy="60" rx="55" ry="20" fill="none" stroke="#00e5cc" stroke-width=".4" stroke-opacity=".15"/>
+          <!-- firm dots scattered globally -->
+          <circle cx="110" cy="45" r="2" fill="#00e5cc" fill-opacity=".6"/>
+          <circle cx="130" cy="55" r="1.5" fill="#00e5cc" fill-opacity=".5"/>
+          <circle cx="145" cy="40" r="2" fill="#00e5cc" fill-opacity=".65"/>
+          <circle cx="165" cy="52" r="1.5" fill="#e8b84b" fill-opacity=".55"/>
+          <circle cx="155" cy="70" r="2" fill="#00e5cc" fill-opacity=".5"/>
+          <circle cx="175" cy="65" r="1.5" fill="#e8b84b" fill-opacity=".5"/>
+          <circle cx="135" cy="72" r="1.5" fill="#00e5cc" fill-opacity=".4"/>
+          <circle cx="190" cy="50" r="2" fill="#e8b84b" fill-opacity=".55"/>
+          <circle cx="120" cy="62" r="1.5" fill="#00e5cc" fill-opacity=".45"/>
+          <circle cx="170" cy="42" r="2" fill="#00e5cc" fill-opacity=".6"/>
+          <text x="150" y="105" fill="#00e5cc" font-size="8" font-family="Space Grotesk" text-anchor="middle" fill-opacity=".4" letter-spacing="1">NATURE DEPENDENCE · 117 COUNTRIES</text>
+        </svg>
+      </div>
+      <div class="data-card-body">
+        <div class="data-badge">Open Access · Global · 117 Countries</div>
+        <div class="data-name">Firm-Level Nature Dependence</div>
+        <div class="data-desc">Measures of nature dependence to ENCORE ecosystem services for 31,772 listed firms from 117 countries between 2010 and 2023. Includes both granular ecosystem service scores and an overall NatureDep index.</div>
+        <div class="data-source">Source: Garel, A., Romec, A., Sautner, Z., &amp; Wagner, A. F. (2025). Firm-level nature dependence. <em>Review of Finance</em>. Forthcoming.</div>
+        <a href="https://osf.io/d85e7/" target="_blank" class="data-download">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download (OSF)
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /data-grid -->
+</div><!-- /page-wrap -->
+
+</body>
+</html>
