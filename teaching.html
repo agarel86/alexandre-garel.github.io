@@ -8,9 +8,11 @@
 <style>
 .courses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 24px;
   margin-bottom: 60px;
+  align-items: stretch;
 }
 
 .course-card {
@@ -19,6 +21,7 @@
   border-radius: 8px;
   overflow: hidden;
   display: flex; flex-direction: column;
+  height: 100%;
   transition: border-color .22s, transform .22s;
 }
 .course-card:hover {
@@ -27,48 +30,37 @@
 }
 
 .course-vis {
-  height: 130px; position: relative; overflow: hidden;
+  height: 130px; flex-shrink: 0; position: relative; overflow: hidden;
   background: linear-gradient(135deg, #081520 0%, #0c1e2e 100%);
 }
 .course-vis svg { width: 100%; height: 100%; }
 
-.course-body { padding: 24px 28px; flex: 1; display: flex; flex-direction: column; }
+.course-body { padding: 22px 24px 24px; flex: 1; display: flex; flex-direction: column; }
 .course-level {
   font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--teal); margin-bottom: 8px;
+  color: var(--teal); margin-bottom: 8px; flex-shrink: 0;
 }
 .course-name {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 22px; font-weight: 700; color: var(--white);
-  line-height: 1.2; margin-bottom: 14px;
+  font-size: 18px; font-weight: 700; color: var(--white);
+  line-height: 1.25; margin-bottom: 12px; flex-shrink: 0;
 }
 .course-desc {
-  font-size: 13.5px; line-height: 1.75;
-  color: rgba(221,229,240,.7);
-  flex: 1;
+  font-size: 13px; line-height: 1.75;
+  color: rgba(221,229,240,.65);
+  flex: 1; text-align: justify;
 }
 .course-topics {
   display: flex; flex-wrap: wrap; gap: 7px;
-  margin-top: 18px; padding-top: 16px;
+  margin-top: 16px; padding-top: 14px;
   border-top: 1px solid rgba(0,229,204,.07);
+  flex-shrink: 0;
 }
 
-.teaching-note {
-  font-size: 14px; line-height: 1.75;
-  color: rgba(221,229,240,.65);
-  max-width: 680px; margin-bottom: 40px;
+@media (max-width: 900px) {
+  .courses-grid { grid-template-columns: 1fr 1fr; }
 }
-
-.school-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-radius: 4px;
-  background: rgba(0,229,204,.05); border: 1px solid rgba(0,229,204,.15);
-  font-size: 12.5px; color: var(--white);
-  margin-bottom: 36px;
-}
-.school-badge span { color: var(--teal); font-weight: 600; }
-
-@media (max-width: 700px) {
+@media (max-width: 600px) {
   .courses-grid { grid-template-columns: 1fr; }
 }
 </style>
@@ -99,12 +91,6 @@
     <div class="sec-rule"></div>
   </div>
 
-  <div class="school-badge">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span>Audencia Business School</span> — Post-Graduate Programs
-  </div>
-
-  <p class="teaching-note">I teach at the post-graduate level at Audencia Business School, combining rigorous theory with hands-on empirical methods. My courses bridge cutting-edge academic research and industry practice in sustainable finance and quantitative methods.</p>
 
   <div class="courses-grid">
 
