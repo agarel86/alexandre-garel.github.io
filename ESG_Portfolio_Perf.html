@@ -182,7 +182,7 @@ align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap
 </table>
 </div></div></div>
 <script>
-/* Data: tries stoxx_data.json.gz then stoxx_data.json (same folder). Override: set window.STOXX_DATA_URL to a full .json.gz or .json URL before load. */
+/* Data: stoxx_data.json.gz then .json; esg_tr_field_order.json; optional stoxx_market_cap_panel.csv. If opened from github.com/.../blob/..., loads from raw.githubusercontent.com. Override: window.STOXX_DATA_URL for STOXX file only. */
 let D,COLS,LABELS,BI,NI,KNI,CAT_I,ZI_SET,FI_SET;
 let formYear=2020;
 let bmkRics=[],pfRics=[];
@@ -376,26 +376,89 @@ if(t.indexOf('version https://git-lfs.github.com/spec/v1')===0){
 return Promise.reject(new Error('Downloaded file is a Git LFS pointer, not data. Run git lfs pull or fetch the real stoxx_data.json.gz blob from the repo.'));}
 try{return Promise.resolve(JSON.parse(t));}
 catch(e){return Promise.reject(new Error('stoxx_data: expected gzip or JSON — '+e.message));}}
-function fetchStoxxJson(base){
-var gz=base+'stoxx_data.json.gz',js=base+'stoxx_data.json';
-function fromResp(r){if(!r.ok)return Promise.reject(new Error('HTTP '+r.status));return r.arrayBuffer().then(parseStoxxArrayBuffer);}
-function bothFail(rG,rJ){return 'STOXX data: '+gz+' → HTTP '+rG.status+'; '+js+' → HTTP '+rJ.status+'. Add stoxx_data.json.gz (≈2 MB) next to this HTML, or set window.STOXX_DATA_URL to the full URL of your .json.gz or .json file before loading.';}
-if(typeof window!=='undefined'&&window.STOXX_DATA_URL){
-var u=String(window.STOXX_DATA_URL);
-return fetch(u).then(function(r){if(!r.ok)return Promise.reject(new Error('STOXX_DATA_URL HTTP '+r.status+': '+u));return r.arrayBuffer().then(parseStoxxArrayBuffer);});}
-return fetch(gz).then(function(rG){if(rG.ok)return fromResp(rG);
-return fetch(js).then(function(rJ){if(rJ.ok)return fromResp(rJ);throw new Error(bothFail(rG,rJ));});});}
+
+function normalizeAssetBase(b){
+  if(!b)return null;
+  b=String(b);
+  if(!b.endsWith('/'))b+='/';
+  return b;
+}
+
+function assetBaseCandidates(){
+  var out=[],seen={};
+  function add(b){
+    b=normalizeAssetBase(b);
+    if(!b||seen[b])return;
+    seen[b]=1;
+    out.push(b);
+  }
+  try{
+    var u=new URL(document.URL);
+    if(u.hostname==='github.com'){
+      var segs=u.pathname.split('/').filter(function(s){return s.length;});
+      if(segs.length>=5&&segs[2]==='blob'){
+        var user=segs[0],repo=segs[1],branch=segs[3],pathSegs=segs.slice(4);
+        if(pathSegs.length)pathSegs.pop();
+        var sub=pathSegs.map(function(p){return encodeURIComponent(p);}).join('/');
+        if(sub)sub+='/';
+        add('https://raw.githubusercontent.com/'+user+'/'+repo+'/'+encodeURIComponent(branch)+'/'+sub);
+        DATA_WARNINGS.push('Opened from github.com file preview — loading data from raw.githubusercontent.com (same branch/path as this file). Prefer your GitHub Pages URL once published.');
+      }
+    }
+  }catch(e){}
+  add(new URL('.',document.URL).href);
+  try{add(new URL('/',document.URL).href);}catch(e2){}
+  return out.length?out:[normalizeAssetBase(new URL('.',document.URL).href)];
+}
+
+function fetchRelativeWithBases(relPath,bases,as){
+  function tryBase(i){
+    if(i>=bases.length){
+      return Promise.reject(new Error(relPath+' not found (tried '+bases.length+' base URL(s)). Upload it next to the HTML on GitHub Pages, or open the site from Pages / raw, not only the blob preview.'));
+    }
+    var url=bases[i]+relPath;
+    return fetch(url,{cache:'no-store'}).then(function(r){
+      if(!r.ok)return tryBase(i+1);
+      if(as==='json')return r.json();
+      return r.text();
+    });
+  }
+  return tryBase(0);
+}
+
+function fetchStoxxAtBases(bases){
+  if(typeof window!=='undefined'&&window.STOXX_DATA_URL){
+    var u=String(window.STOXX_DATA_URL);
+    return fetch(u,{cache:'no-store'}).then(function(r){
+      if(!r.ok)return Promise.reject(new Error('STOXX_DATA_URL HTTP '+r.status+': '+u));
+      return r.arrayBuffer().then(parseStoxxArrayBuffer);
+    });
+  }
+  function tryBase(i){
+    if(i>=bases.length){
+      return Promise.reject(new Error('stoxx_data.json.gz / stoxx_data.json: not found under any base URL. Add stoxx_data.json.gz (~2 MB) next to this HTML, or set window.STOXX_DATA_URL to the full URL of the file.'));
+    }
+    var b=bases[i],gz=b+'stoxx_data.json.gz',js=b+'stoxx_data.json';
+    return fetch(gz,{cache:'no-store'}).then(function(rG){
+      if(rG.ok)return rG.arrayBuffer().then(parseStoxxArrayBuffer);
+      return fetch(js,{cache:'no-store'}).then(function(rJ){
+        if(rJ.ok)return rJ.arrayBuffer().then(parseStoxxArrayBuffer);
+        return tryBase(i+1);
+      });
+    });
+  }
+  return tryBase(0);
+}
 
 function loadAllData(){
-  var base=new URL('.',document.URL).href;
-  var fUrl=base+'esg_tr_field_order.json';
-  var cUrl=base+'stoxx_market_cap_panel.csv';
+  var bases=assetBaseCandidates();
   return Promise.all([
-    fetchStoxxJson(base),
-    fetch(fUrl).then(function(r){if(!r.ok)throw new Error('esg_tr_field_order.json HTTP '+r.status);return r.json();}),
-    fetch(cUrl).then(function(r){if(!r.ok){DATA_WARNINGS.push('Could not fetch stoxx_market_cap_panel.csv (HTTP '+r.status+').');return '';}return r.text();})
+    fetchStoxxAtBases(bases),
+    fetchRelativeWithBases('esg_tr_field_order.json',bases,'json'),
+    fetchRelativeWithBases('stoxx_market_cap_panel.csv',bases,'text').catch(function(){return '';})
   ]).then(function(all){
     var raw=all[0], order=all[1], csv=all[2];
+    if(!csv)DATA_WARNINGS.push('Could not fetch stoxx_market_cap_panel.csv from any tried URL. Benchmark weights need this file next to the HTML (or upload to the same path on raw GitHub).');
     var mcap=csv?parseMarketCapCsv(csv):{};
     return buildDataset(raw,order,mcap);
   });
