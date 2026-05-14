@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EURO STOXX 600 — ESG Portfolio Builder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--s1:#111827;--s2:#1a2235;--s3:#232d42;--bd:#2a3550;
+--tx:#e2e8f0;--t2:#94a3b8;--t3:#64748b;--ac:#3b82f6;--a2:#60a5fa;
+--gn:#10b981;--rd:#ef4444;--yl:#f59e0b;--pp:#8b5cf6;
+--f:'DM Sans',sans-serif;--m:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:13px;line-height:1.5}
+.ctn{max-width:1700px;margin:0 auto;padding:12px 16px}
+h1{font-size:1.5rem;font-weight:700;letter-spacing:-.5px}
+h2{font-size:1.05rem;font-weight:600;color:var(--a2);margin-bottom:8px}
+h3{font-size:.9rem;font-weight:600}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd);margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.tabs{display:flex;gap:2px;background:var(--s1);border-radius:8px;padding:3px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:500;color:var(--t2);transition:all .2s;font-size:.78rem}
+.tab:hover{color:var(--tx);background:var(--s2)}.tab.act{background:var(--ac);color:#fff}
+.pnl{display:none}.pnl.act{display:block}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px}
+.rw{display:flex;gap:10px;flex-wrap:wrap}.cl{flex:1;min-width:240px}
+select,input[type=number],input[type=text]{background:var(--s2);border:1px solid var(--bd);color:var(--tx);
+padding:5px 8px;border-radius:5px;font-family:var(--f);font-size:.78rem;width:100%}
+select:focus,input:focus{outline:none;border-color:var(--ac)}
+label{display:block;font-size:.72rem;color:var(--t2);margin-bottom:2px;font-weight:500}
+button{background:var(--ac);color:#fff;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;
+font-family:var(--f);font-weight:600;font-size:.78rem;transition:all .2s}
+button:hover{opacity:.9}
+.btn2{background:var(--s2);color:var(--t2);border:1px solid var(--bd)}
+.bg{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.68rem;font-weight:600}
+.bg-g{background:rgba(16,185,129,.15);color:var(--gn)}
+.bg-r{background:rgba(239,68,68,.15);color:var(--rd)}
+.bg-b{background:rgba(59,130,246,.15);color:var(--a2)}
+table{width:100%;border-collapse:collapse;font-size:.73rem}
+th{background:var(--s2);color:var(--t2);padding:6px 5px;text-align:left;font-weight:600;
+position:sticky;top:0;z-index:2;border-bottom:2px solid var(--bd);white-space:nowrap;cursor:pointer;font-size:.7rem}
+th:hover{color:var(--a2)}
+td{padding:5px;border-bottom:1px solid rgba(42,53,80,.5);white-space:nowrap}
+tr:hover td{background:var(--s2)}
+.tw{max-height:480px;overflow:auto;border:1px solid var(--bd);border-radius:8px}
+.pos{color:var(--gn)}.neg{color:var(--rd)}.mn{font-family:var(--m)}
+.chip{padding:3px 7px;border-radius:4px;font-size:.68rem;cursor:pointer;border:1px solid var(--bd);
+background:var(--s2);color:var(--t2);transition:all .12s;user-select:none;display:inline-block;margin:2px}
+.chip:hover{border-color:var(--ac)}.chip.exc{background:rgba(239,68,68,.12);color:var(--rd);border-color:var(--rd);text-decoration:line-through}
+.sbar{display:flex;gap:14px;padding:10px 14px;background:var(--s1);border-radius:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.sbar strong{color:var(--tx);font-family:var(--m)}
+.sbar span{color:var(--t2)}
+.cg{display:flex;flex-wrap:wrap;gap:3px;max-height:150px;overflow-y:auto;padding:4px 0}
+.scroll-x{overflow-x:auto}
+canvas{display:block;width:100%}
+.lgn{display:flex;gap:14px;justify-content:center;margin-top:6px;font-size:.7rem;flex-wrap:wrap}
+.lgn-i{display:flex;align-items:center;gap:4px}.lgn-d{width:10px;height:10px;border-radius:2px}
+.filter-section{margin-bottom:8px}
+.filter-section summary{cursor:pointer;font-weight:600;font-size:.8rem;color:var(--a2);padding:4px 0;list-style:none}
+.filter-section summary::before{content:'▸ ';font-size:.7rem}
+.filter-section[open] summary::before{content:'▾ '}
+.filter-section summary:hover{color:var(--tx)}
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px;margin-top:6px}
+.filter-item{display:flex;gap:4px;align-items:center;font-size:.7rem}
+.filter-item .fn{min-width:155px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:help;border-bottom:1px dotted var(--t3)}
+.filter-item .fn:hover{color:var(--a2)}
+.filter-item input[type=number]{width:62px;padding:3px 5px;font-size:.7rem}
+.bool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px}
+.bool-item{display:flex;align-items:center;gap:3px;font-size:.7rem;padding:2px 0}
+.bool-item label{margin:0;cursor:help;color:var(--t2);border-bottom:1px dotted var(--t3)}
+.bool-item label:hover{color:var(--a2)}
+input[type=checkbox]{accent-color:var(--ac)}
+.cmp-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0 10px}
+.cmp-tab{padding:5px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);color:var(--t2);cursor:pointer;font-size:.72rem;font-family:var(--f);font-weight:500}
+.cmp-tab:hover{color:var(--tx)}.cmp-tab.act{background:var(--ac);color:#fff;border-color:var(--ac)}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+@media(max-width:900px){.cmp-grid{grid-template-columns:1fr}}
+.cmp-subh{font-size:.78rem;color:var(--a2);margin:0 0 6px;font-weight:600}
+.dist-wrap{max-height:380px;overflow:auto;border:1px solid var(--bd);border-radius:8px}
+.dist-wrap table{font-size:.72rem}
+.cmp-note{font-size:.68rem;color:var(--t3);margin-bottom:8px;line-height:1.45}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h3{color:var(--a2);margin-bottom:6px;font-size:1rem}
+.modal .code{font-family:var(--m);font-size:.7rem;color:var(--t3);margin-bottom:10px}
+.modal .def{color:var(--tx);font-size:.82rem;margin-bottom:14px;line-height:1.6}
+.modal .dist-bar{height:18px;border-radius:3px;margin:4px 0}
+.modal .dist-label{font-size:.7rem;color:var(--t2);display:flex;justify-content:space-between}
+.modal .close-btn{float:right;background:none;color:var(--t3);font-size:1.2rem;cursor:pointer;border:none;padding:0 4px}
+.modal .close-btn:hover{color:var(--tx)}
+.modal table{margin:8px 0}
+.modal td{padding:3px 8px;font-size:.75rem}
+@media(max-width:768px){.rw{flex-direction:column}}
+#loading{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);display:flex;
+align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px}
+#loading .spinner{width:40px;height:40px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div><div style="color:var(--t2);font-size:.85rem">Loading 600 constituents…</div></div>
+<!-- Variable info modal -->
+<div class="modal-overlay" id="varModal" onclick="if(event.target===this)closeModal()">
+<div class="modal"><button class="close-btn" onclick="closeModal()">✕</button>
+<h3 id="mTitle"></h3><div class="code" id="mCode"></div>
+<div class="def" id="mDef"></div>
+<div id="mDist"></div>
+</div></div>
+
+<div class="ctn" id="app" style="display:none">
+<div class="hdr">
+<div><h1>EURO STOXX 600 — ESG Portfolio Builder</h1>
+<div style="color:var(--t2);font-size:.8rem">ESG-screened portfolios vs value-weighted benchmark · Click any variable name for definition & distribution</div></div>
+<div style="display:flex;gap:12px;align-items:end">
+<div><label>Formation Year</label><select id="fy" style="width:100px"></select>
+<div style="font-size:.6rem;color:var(--t3)">Uses end-of-(Y−1) ESG data</div></div>
+<div><button type="button" onclick="buildPortfolio()">Build Portfolio</button></div>
+<div><button class="btn2" onclick="resetAll()">Reset All</button></div>
+<div><button class="btn2" onclick="saveConfig()" style="background:rgba(16,185,129,.15);color:var(--gn);border-color:var(--gn)">💾 Save Config</button></div>
+<div><button class="btn2" onclick="document.getElementById('loadInput').click()" style="background:rgba(139,92,246,.15);color:var(--pp);border-color:var(--pp)">📂 Load Config</button>
+<input type="file" id="loadInput" accept=".txt,.json" style="display:none" onchange="loadConfig(event)"></div>
+</div></div>
+<div id="dataWarnings" class="cd" style="display:none;border-color:var(--yl);background:rgba(245,158,11,.06)"></div>
+<div class="tabs" id="tabs"></div>
+<div class="pnl act" id="p-screen">
+<div class="rw">
+<div class="cl" style="max-width:500px;min-width:350px">
+<div class="cd"><h3>Sector Exclusions</h3>
+<p style="font-size:.68rem;color:var(--t3);margin:2px 0 6px">Click to exclude</p>
+<div class="cg" id="secChips"></div></div>
+<div class="cd"><h3>Industry Exclusions (GICS)</h3>
+<p style="font-size:.68rem;color:var(--t3);margin:2px 0 6px">Click to exclude specific industries</p>
+<div class="cg" id="indChips" style="max-height:200px"></div></div>
+<div class="cd" id="numFiltersCard"><h3>Numeric Filters (min / max)</h3>
+<p style="font-size:.68rem;color:var(--t3);margin:2px 0 6px">Click variable name for definition & sample distribution</p>
+<div id="numFilters"></div></div>
+<div class="cd" id="boolFiltersCard"><h3>Boolean Exclusions (check = exclude stocks where True)</h3>
+<p style="font-size:.68rem;color:var(--t3);margin:2px 0 6px">Click variable name for definition</p>
+<div id="boolFilters"></div></div>
+</div>
+<div class="cl">
+<div class="sbar"><span>Benchmark: <strong id="nBm">0</strong></span>
+<span>Portfolio: <strong id="nPf">0</strong></span>
+<span>Excluded: <strong id="nEx">0</strong></span>
+<span>Sectors: <strong id="nSec">0</strong></span></div>
+<div class="cd" id="screenCompare" style="display:none;margin-bottom:10px"><div id="cmpMount"></div></div>
+<div class="cd" style="padding:8px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;padding:0 6px">
+<h3>Constituents <span id="tInfo" style="font-weight:400;color:var(--t3);font-size:.73rem"></span></h3>
+<input type="text" id="srch" placeholder="Search…" style="width:160px;font-size:.7rem">
+</div><div class="tw" id="tbl"></div></div></div></div>
+</div>
+<div class="pnl" id="p-perf"><div id="perfC"></div></div>
+<div class="pnl" id="p-year"><div id="yearC"></div></div>
+<div class="pnl" id="p-crisis"><div id="crisisC"></div></div>
+<div class="pnl" id="p-meth"><div class="cd" style="max-width:950px">
+<h2>Methodology</h2>
+<h3 style="margin-top:14px">Portfolio Construction</h3>
+<p><strong>Value-weighted (market-cap weighted, in EUR).</strong> Formation year Y → uses ESG data as of end-of-year Y−1 to screen stocks. Market capitalisation in EUR as of end-of-year Y−1 determines each stock’s weight. Benchmark = all constituents with returns and market cap data. Portfolio = benchmark minus excluded stocks. Monthly portfolio return = Σ(w<sub>i</sub> × r<sub>i</sub>) where w<sub>i</sub> = MCap<sub>i</sub> / Σ MCap. Stocks without market cap data for the weighting year are excluded from both benchmark and portfolio. Note: these results are gross of fees — a real fund implementing any active screening strategy would charge management fees that would reduce the reported returns.</p>
+<h3 style="margin-top:14px">Metrics</h3>
+<table><tr><th style="width:160px">Metric</th><th>Formula</th></tr>
+<tr><td>Cumulative Return</td><td>∏(1+r_t)−1</td></tr>
+<tr><td>Annualized Return</td><td>(1+cum)^(12/N)−1</td></tr>
+<tr><td>Ann. Volatility</td><td>σ(monthly)×√12</td></tr>
+<tr><td>Sharpe</td><td>AnnR/AnnVol (rf=0)</td></tr>
+<tr><td>Sortino</td><td>AnnR / (√mean(min(r,0)²)×√12)</td></tr>
+<tr><td>Max Drawdown</td><td>max peak-to-trough decline</td></tr>
+<tr><td>Alpha</td><td>OLS intercept ×12</td></tr>
+<tr><td>Beta</td><td>OLS slope R_pf~R_bmk</td></tr>
+</table>
+<h3 style="margin-top:14px">Crisis Periods</h3>
+<table><tr><th>Name</th><th>Start</th><th>End</th><th>Context</th></tr>
+<tr><td>COVID-19 Crash</td><td>2020-02</td><td>2020-03</td><td>Pandemic shock</td></tr>
+<tr><td>COVID-19 Extended</td><td>2020-02</td><td>2020-12</td><td>Full pandemic year</td></tr>
+<tr><td>2022 Rate Shock / Bear Market</td><td>2022-01</td><td>2022-06</td><td>Inflation, rate hikes, bond sell-off</td></tr>
+<tr><td>Ukraine War / Energy Crisis</td><td>2022-02</td><td>2022-09</td><td>Russian invasion, energy price surge</td></tr>
+<tr><td>UK Gilt Crisis (Truss)</td><td>2022-09</td><td>2022-10</td><td>UK mini-budget, gilt meltdown</td></tr>
+<tr><td>SVB / Banking Stress</td><td>2023-03</td><td>2023-03</td><td>SVB collapse, Credit Suisse takeover</td></tr>
+<tr><td>2018 Q4 Selloff</td><td>2018-10</td><td>2018-12</td><td>Trade war, ECB tightening</td></tr>
+<tr><td>China/Oil Shock 2015-16</td><td>2015-08</td><td>2016-02</td><td>China devaluation, oil collapse</td></tr>
+<tr><td>Greek Crisis (Grexit fears)</td><td>2015-06</td><td>2015-08</td><td>Capital controls, referendum, bailout</td></tr>
+</table>
+</div></div></div>
+<script>
+let D,COLS,LABELS,BI,NI,KNI,CAT_I,ZI_SET,FI_SET;
+let formYear=2020;
+let bmkRics=[],pfRics=[];
+let secExcl=new Set(),indExcl=new Set(),boolExcl=new Set(),numThresh={},catFilters={};
+let sortK=null,sortD=1,srchTerm='';
+var chartData={};
+var DATA_WARNINGS=[];
+var cmpScreenTab='cap';
+
+const TABS=[['screen','1. Screening'],['perf','2. Performance'],['year','3. Year-by-Year'],['crisis','4. Crisis Periods'],['meth','5. Methodology']];
+const CRISES=[
+{n:'COVID-19 Crash',s:'2020-02',e:'2020-03',d:'Pandemic shock, STOXX 600 ~-35%'},
+{n:'COVID-19 Extended',s:'2020-02',e:'2020-12',d:'Full pandemic year incl. recovery'},
+{n:'2022 Rate Shock',s:'2022-01',e:'2022-06',d:'Inflation surge, rate hikes, bond rout'},
+{n:'Ukraine / Energy Crisis',s:'2022-02',e:'2022-09',d:'Russian invasion, gas price surge'},
+{n:'UK Gilt Crisis',s:'2022-09',e:'2022-10',d:'Truss mini-budget, gilt meltdown'},
+{n:'SVB / Banking Stress',s:'2023-03',e:'2023-03',d:'SVB collapse, Credit Suisse rescue'},
+{n:'2018 Q4 Selloff',s:'2018-10',e:'2018-12',d:'Trade war fears, ECB tightening'},
+{n:'China/Oil 2015-16',s:'2015-08',e:'2016-02',d:'China devaluation, commodity collapse'},
+{n:'Greek Crisis (Grexit)',s:'2015-06',e:'2015-08',d:'Capital controls, referendum Jul 5, bailout Aug'},
+];
+
+function trToJsonKey(tr){return tr.replace(/^TR\./i,'').toUpperCase();}
+
+function isCountField(tr){
+  if(/ControversiesScore|Score$/i.test(tr))return false;
+  return /^(TR\.)?(Controv|RecentControv|ControversiesCount|ResourceUseControversies|BiodiversityAndEcosystemControversies|PollutionControversies|Strikes|ProductRecall|MgtDepartures)/i.test(tr);
+}
+
+function parseMarketCapCsv(text){
+  var m={};
+  var lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  for(var li=1;li<lines.length;li++){
+    var ln=lines[li]; if(!ln.trim())continue;
+    var parts=[]; var cur='',q=false;
+    for(var i=0;i<ln.length;i++){
+      var ch=ln[i];
+      if(ch==='"'){q=!q;continue;}
+      if(ch===','&&!q){parts.push(cur);cur='';continue;}
+      cur+=ch;
+    }
+    parts.push(cur);
+    if(parts.length<5)continue;
+    var ric=parts[0].replace(/^"|"$/g,'').trim();
+    var yr=parts[1].replace(/^"|"$/g,'').trim();
+    var capStr=parts[4].replace(/^"|"$/g,'').trim();
+    if(!ric||!yr)continue;
+    var cap=capStr===''?null:parseFloat(capStr);
+    if(!m[ric])m[ric]={};
+    m[ric][yr]=isNaN(cap)?null:cap;
+  }
+  return m;
+}
+
+function buildDataset(rawJson, trOrder, mcapMap){
+  DATA_WARNINGS=[];
+  var dataKeysGlobal={};
+  var rics=Object.keys(rawJson).sort();
+  rics.forEach(function(ric){
+    var o=rawJson[ric];
+    var esg=o.esg||{};
+    Object.keys(esg).forEach(function(y){
+      var row=esg[y];
+      if(!row||typeof row!=='object')return;
+      Object.keys(row).forEach(function(k){dataKeysGlobal[k]=1;});
+    });
+  });
+  var keySet=Object.keys(dataKeysGlobal);
+  var COL=[];
+  var seenCol={};
+  function addCol(tr){
+    if(seenCol[tr])return;
+    var jk=trToJsonKey(tr);
+    if(!dataKeysGlobal[jk])return;
+    COL.push(tr);seenCol[tr]=1;
+  }
+  trOrder.forEach(addCol);
+  keySet.sort().forEach(function(jk){
+    var tr='TR.'+jk;
+    if(!seenCol[tr]){COL.push(tr);seenCol[tr]=1;}
+  });
+  COLS=COL;
+  CAT_I=[];
+  var n=COLS.length;
+  BI=[];NI=[];
+  var boolVotes={}, numVotes={}, strVotes={};
+  function noteSample(idx,v){
+    if(v==null)return;
+    if(typeof v==='boolean'){boolVotes[idx]=(boolVotes[idx]||0)+1;}
+    else if(typeof v==='number'){numVotes[idx]=(numVotes[idx]||0)+1;}
+    else if(typeof v==='string'){strVotes[idx]=(strVotes[idx]||0)+1;}
+  }
+  var probeYears=['2023','2024','2022','2021','2020'];
+  rics.forEach(function(ric){
+    var esg=(rawJson[ric]&&rawJson[ric].esg)||{};
+    probeYears.forEach(function(py){
+      var row=esg[py];
+      if(!row)return;
+      for(var i=0;i<n;i++){
+        var jk=trToJsonKey(COLS[i]);
+        if(Object.prototype.hasOwnProperty.call(row,jk))noteSample(i,row[jk]);
+      }
+    });
+  });
+  for(var i=0;i<n;i++){
+    var bc=boolVotes[i]||0, nc=numVotes[i]||0, sc=strVotes[i]||0;
+    if(sc>0&&nc===0&&bc===0)continue;
+    if(bc>0&&nc===0)BI.push(i);
+    else if(nc>0)NI.push(i);
+  }
+  ZI_SET={};FI_SET={};
+  BI.forEach(function(i){FI_SET[i]=1;});
+  NI.forEach(function(i){
+    if(isCountField(COLS[i]))ZI_SET[i]=1;
+  });
+  var L=[];
+  for(var i=0;i<n;i++){
+    L.push([friendlyNameFromTr(COLS[i]),'Definition not bundled with this build; code matches LSEG extract in collect_data_stoxx.py / raw JSON keys (uppercase TR name).']);
+    if(COLS[i]==='TR.TRESGCControversiesScore'||COLS[i]==='TR.ESGCControversiesScore'){
+      L[L.length-1][1]='Numeric score 1–100 from LSEG: higher values indicate fewer / less severe ESG controversies (100 = no ESG controversies). When both fields exist in the extract, the tool prefers TR.ESGCControversiesScore for the table column.';
+    }
+  }
+  LABELS=L;
+  var esgIndex=['TR.TRESGScore','TR.EnvironmentPillarScore','TR.SocialPillarScore','TR.GovernancePillarScore'];
+  var contra=null;
+  if(COLS.indexOf('TR.ESGCControversiesScore')>=0)contra='TR.ESGCControversiesScore';
+  else if(COLS.indexOf('TR.TRESGCControversiesScore')>=0)contra='TR.TRESGCControversiesScore';
+  else {
+    DATA_WARNINGS.push('Neither TR.ESGCControversiesScore nor TR.TRESGCControversiesScore appears in stoxx_data.json. Controversies column in the table will be blank until the extract includes one of these fields.');
+    contra='TR.TRESGCControversiesScore';
+  }
+  if(contra && COLS.indexOf(contra)<0) DATA_WARNINGS.push('Controversies score field '+contra+' missing from merged COLS.');
+  function idxOrWarn(tr){var j=COLS.indexOf(tr); if(j<0){DATA_WARNINGS.push('Missing expected column '+tr+' in dataset.');return -1;}return j;}
+  KNI=[idxOrWarn(esgIndex[0]),idxOrWarn(esgIndex[1]),idxOrWarn(esgIndex[2]),idxOrWarn(esgIndex[3]),idxOrWarn(contra)];
+
+  var R={};
+  var S=[];
+  rics.forEach(function(ric){
+    var o=rawJson[ric];
+    if(!o)return;
+    var nm=o.name||ric;
+    var sec=o.sector||'Unknown';
+    var ind=o.industry||'Unknown';
+    var ct=(o.country!=null&&String(o.country).trim()!=='')?String(o.country).trim():'Unknown';
+    var mr=o.monthly_returns||{};
+    var esg=o.esg||{};
+    var ser=[];
+    Object.keys(mr).sort().forEach(function(dm){
+      var rv=mr[dm];
+      if(rv==null||isNaN(rv))return;
+      ser.push([dm,rv/100]);
+    });
+    R[ric]=ser;
+    var d={};
+    Object.keys(esg).sort().forEach(function(ey){
+      var src=esg[ey];
+      if(!src||typeof src!=='object')return;
+      var row={};
+      for(var i=0;i<n;i++){
+        var jk=trToJsonKey(COLS[i]);
+        var v=Object.prototype.hasOwnProperty.call(src,jk)?src[jk]:null;
+        if(v==null&&FI_SET[i])v=false;
+        if(v==null&&ZI_SET[i])v=0;
+        row[i]=v;
+      }
+      row.MC=null;
+      if(mcapMap&&mcapMap[ric]&&Object.prototype.hasOwnProperty.call(mcapMap[ric],ey))
+        row.MC=mcapMap[ric][ey];
+      d[ey]=row;
+    });
+    S.push({r:ric,n:nm,s:sec,i:ind,c:ct,d:d});
+  });
+  if(!mcapMap||!Object.keys(mcapMap).length)
+    DATA_WARNINGS.push('Market capitalisation not loaded (stoxx_market_cap_panel.csv missing or empty). Benchmark weighting uses MC from that file (TR.CompanyMarketCapitalization in EUR). Without it, no stocks enter the investable universe.');
+  return {C:COLS,L:LABELS,BI:BI,NI:NI,KN:KNI,CI:CAT_I,ZI:Object.keys(ZI_SET).map(Number),FI:Object.keys(FI_SET).map(Number),S:S,R:R};
+}
+
+function friendlyNameFromTr(tr){
+  return tr.replace(/^TR\./,'').replace(/([a-z])([A-Z0-9])/g,function(_,a,b){return a+' '+b;});
+}
+
+function fetchStoxxJson(base){
+var gz=base+'stoxx_data.json.gz',js=base+'stoxx_data.json';
+return fetch(gz).then(function(rG){
+if(rG.ok){
+if(typeof DecompressionStream==='undefined'){
+throw new Error('stoxx_data.json.gz: this browser cannot decompress gzip. Use stoxx_data.json or update your browser.');}
+return rG.arrayBuffer().then(function(buf){
+return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).json().catch(function(e){
+throw new Error('stoxx_data.json.gz: corrupt or not gzip? '+e.message);});});}
+return fetch(js).then(function(rJ){
+if(rJ.ok)return rJ.json();
+throw new Error('STOXX data: stoxx_data.json.gz returned HTTP '+rG.status+', stoxx_data.json returned HTTP '+rJ.status+'. Upload one of these next to ESG_Portfolio_Perf.html (gzip is ~2 MB). If you only upload the .gz file, you must use this version of the HTML that loads .gz first.');});});}
+
+function loadAllData(){
+  var base=new URL('.',document.URL).href;
+  var fUrl=base+'esg_tr_field_order.json';
+  var cUrl=base+'stoxx_market_cap_panel.csv';
+  return Promise.all([
+    fetchStoxxJson(base),
+    fetch(fUrl).then(function(r){if(!r.ok)throw new Error('esg_tr_field_order.json HTTP '+r.status);return r.json();}),
+    fetch(cUrl).then(function(r){if(!r.ok){DATA_WARNINGS.push('Could not fetch stoxx_market_cap_panel.csv (HTTP '+r.status+').');return '';}return r.text();})
+  ]).then(function(all){
+    var raw=all[0], order=all[1], csv=all[2];
+    var mcap=csv?parseMarketCapCsv(csv):{};
+    return buildDataset(raw,order,mcap);
+  });
+}
+
+// Modal
+function computeDist(idx,year){
+var vals=[];
+D.S.forEach(function(s){
+var d=s.d[year]||{};
+var v=d[idx];
+if(v==null){
+if(ZI_SET[idx])v=0;
+else if(FI_SET[idx])v=false;
+}
+if(v!=null)vals.push(v);
+});
+if(!vals.length)return null;
+if(BI.indexOf(idx)>=0){
+var tc=0,fc=0;vals.forEach(function(v){if(v===true)tc++;else fc++;});
+return{t:'b',y:tc,n:fc,c:tc+fc};
+}else if(NI.indexOf(idx)>=0){
+var nums=vals.filter(function(v){return typeof v==='number';}).sort(function(a,b){return a-b;});
+if(!nums.length)return null;
+var n=nums.length;
+return{t:'n',c:n,mn:Math.round(nums[0]*100)/100,mx:Math.round(nums[n-1]*100)/100,
+avg:Math.round(nums.reduce(function(a,b){return a+b;},0)/n*100)/100,
+med:Math.round(nums[Math.floor(n/2)]*100)/100,
+p25:Math.round(nums[Math.floor(n/4)]*100)/100,
+p75:Math.round(nums[Math.floor(3*n/4)]*100)/100};
+}
+return null;
+}
+function showVarInfo(idx){
+idx=Number(idx);
+var name=LABELS[idx]?LABELS[idx][0]:COLS[idx];
+var def=LABELS[idx]?LABELS[idx][1]:'No definition available.';
+var code=COLS[idx];
+document.getElementById('mTitle').textContent=name;
+document.getElementById('mCode').textContent='Refinitiv / LSEG style code: '+code;
+document.getElementById('mDef').textContent=def;
+var ey=String(formYear-1);
+var di=computeDist(idx,ey);
+let dh='';
+if(di){
+if(di.t==='b'){
+const total=di.y+di.n;const yp=total?(di.y/total*100).toFixed(1):0;const np=total?(di.n/total*100).toFixed(1):0;
+dh+=`<div style="font-size:.78rem;font-weight:600;margin-bottom:6px">Distribution (end-${ey} data, n=${total})</div>`;
+dh+=`<div style="display:flex;height:22px;border-radius:4px;overflow:hidden;margin:6px 0">`;
+dh+=`<div style="width:${yp}%;background:var(--gn);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;color:#fff">${yp}%</div>`;
+dh+=`<div style="width:${np}%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--t2)">${np}%</div>`;
+dh+=`</div><div class="dist-label"><span>True: ${di.y}</span><span>False: ${di.n}</span></div>`;
+}else if(di.t==='n'){
+dh+=`<div style="font-size:.78rem;font-weight:600;margin-bottom:6px">Distribution (end-${ey} data, n=${di.c})</div>`;
+dh+=`<table><tr><td style="color:var(--t2)">Min</td><td class="mn">${di.mn}</td><td style="color:var(--t2)">25th</td><td class="mn">${di.p25}</td></tr>`;
+dh+=`<tr><td style="color:var(--t2)">Median</td><td class="mn">${di.med}</td><td style="color:var(--t2)">75th</td><td class="mn">${di.p75}</td></tr>`;
+dh+=`<tr><td style="color:var(--t2)">Mean</td><td class="mn">${di.avg}</td><td style="color:var(--t2)">Max</td><td class="mn">${di.mx}</td></tr></table>`;
+const range=di.mx-di.mn;
+if(range>0){
+dh+=`<div style="display:flex;align-items:flex-end;height:40px;gap:1px;margin-top:8px">`;
+const bins=20;const bw=range/bins;const counts=new Array(bins).fill(0);
+for(var si=0;si<D.S.length;si++){var s=D.S[si];var dd=s.d[ey]||{};var v=dd[idx];if(v==null&&ZI_SET[idx])v=0;
+if(v!=null&&typeof v==='number'){const b=Math.min(Math.floor((v-di.mn)/bw),bins-1);if(b>=0)counts[b]++;}}
+const mx=Math.max(...counts,1);
+for(let i=0;i<bins;i++){const h=Math.max(1,counts[i]/mx*40);
+dh+=`<div style="flex:1;height:${h}px;background:var(--ac);border-radius:1px;opacity:${counts[i]?0.7:0.15}" title="${(di.mn+i*bw).toFixed(1)}-${(di.mn+(i+1)*bw).toFixed(1)}: ${counts[i]}"></div>`;}
+dh+=`</div><div class="dist-label"><span>${di.mn}</span><span>${di.mx}</span></div>`;
+}
+}}
+document.getElementById('mDist').innerHTML=dh;
+document.getElementById('varModal').classList.add('show');
+}
+function closeModal(){document.getElementById('varModal').classList.remove('show');}
+window.closeModal=closeModal;
+
+window.addEventListener('DOMContentLoaded',function(){
+var ld=document.getElementById('loading');
+ld.querySelector('div:last-child').textContent='Loading STOXX data (gzip or JSON), field order, and market caps…';
+loadAllData().then(function(built){
+D=built;COLS=D.C;LABELS=D.L;BI=D.BI;NI=D.NI;KNI=D.KN;CAT_I=D.CI;ZI_SET={};FI_SET={};(D.ZI||[]).forEach(function(i){ZI_SET[i]=1;});(D.FI||[]).forEach(function(i){FI_SET[i]=1;});
+ld.style.display='none';
+document.getElementById('app').style.display='block';
+var wf=document.getElementById('dataWarnings');
+if(wf&&DATA_WARNINGS.length){
+wf.style.display='block';
+wf.innerHTML='<strong>Data sourcing notes</strong><ul style="margin:6px 0 0 18px;font-size:.72rem;color:var(--t2)">'+
+DATA_WARNINGS.map(function(w){return '<li>'+w+'</li>';}).join('')+'</ul>';}
+var sel=document.getElementById('fy');
+for(var y=2016;y<=2025;y++){var o=document.createElement('option');o.value=y;o.text=y;if(y===2020)o.selected=true;sel.appendChild(o);}
+sel.onchange=function(e){formYear=+e.target.value;apply();};
+var tc=document.getElementById('tabs');
+TABS.forEach(function(t){
+var d=document.createElement('div');d.className='tab'+(t[0]==='screen'?' act':'');d.textContent=t[1];d.dataset.t=t[0];
+d.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('act');});
+document.querySelectorAll('.pnl').forEach(function(x){x.classList.remove('act');});
+d.classList.add('act');document.getElementById('p-'+t[0]).classList.add('act');
+if(t[0]==='perf'&&chartData.cum){setTimeout(function(){drawCum(chartData.cum.pFull,chartData.cum.bFull);},50);}
+if(t[0]==='year'&&chartData.bar){setTimeout(function(){drawBar('barPo',chartData.bar.pfPo,chartData.bar.bmPo);drawBar('barPr',chartData.bar.pfPr,chartData.bar.bmPr);},50);}
+};
+tc.appendChild(d);});
+buildUI();apply();
+document.getElementById('srch').oninput=function(e){srchTerm=e.target.value.toLowerCase();renderTbl();};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+}).catch(function(e){
+ld.querySelector('div:last-child').textContent='Failed to load data: '+e.message;
+console.error(e);
+});
+});
+
+function friendlyName(idx){return LABELS[idx]?LABELS[idx][0]:COLS[idx].replace('TR.','').replace(/_/g,' ');}
+
+function groupCols(indices){
+var groups={};
+indices.forEach(function(i){
+var c=COLS[i],g='Other';
+if(c.match(/TR\.TRESGScore|EnvironmentPillar|SocialPillar|GovernancePillar|ESGCControversiesScore|TRESGCControversiesScore/i))g='ESG Scores';
+else if(c.match(/SDG\d/))g='SDG Indicators';
+else if(c.match(/^TR\.RecentControv/i))g='Recent Controversies';
+else if(c.match(/^TR\.Controv/i))g='Controversies';
+else if(c.match(/POLICY/i))g='Policies';
+else if(c.match(/ANALYTIC/i))g='Analytic Indicators';
+else if(c.match(/HUMANRIGHTS|LABOUR|ILO|FREEDOM/i))g='Human Rights & Labour';
+else if(c.match(/BOARD|EXEC|CEO|AUDIT|GOVERNANCE|NOMINATION|COMP.*COMM|CLAWBACK|GOLDEN|SHAREHOLDER|ONESHAREONEVOTE|SUPERMAJORITY|LEADINDEP/i))g='Governance & Board';
+else if(c.match(/SUPPLY|SUPPLIER/i))g='Supply Chain';
+else if(c.match(/CORRUPTION|BRIBERY|ETHICS|WHISTLEBLOWER|CODEOFCONDUCT|POLITICALCONTRIB/i))g='Business Ethics';
+else if(c.match(/EMPLOYEE|WOMEN|TRAINING|SAFETY|HEALTH|TURNOVER|DISABILITY|FLEXIBLE|STRIKE|UNION|SALARY|DIVERSITY|EQUAL.*PAY|GENDER|SATISFACTION|RESOURCE.*GROUP/i))g='Workforce & Social';
+else if(c.match(/CO2|ENERGY|WATER|WASTE|EMISSION|RENEW|BIODIVERSITY|ENV|POLLUTION|RESOURCE|LAND|ISO|CLIMATE|ECODESIGN|LIFECYCLE|TAKEBACK|GREENBUILDING|CLEANENERGY/i))g='Environment & Climate';
+else if(c.match(/ARMAMENTS|CLUSTER|LANDMINE|PORK|PORN|ABORTIFACIENT|CONTRACEPTIVE|EMBRYONIC|ANIMAL|TOBACCO|GAMBLING|ALCOHOL|NUCLEAR/i))g='Controversial Activities';
+else if(c.match(/CSR|GLOBAL.*COMPACT|UNPRI|EITI|ETI|EQUATOR|SUSTAINABILITY|TCFD|GRI|INTEGRATED.*STRATEGY/i))g='Reporting & Standards';
+else if(c.match(/CUSTOMER|PRODUCT|RETAIL|HEALTHY|DISEASE|OBESITY|DRUG|SIXSIGMA|PYRAMID|HIV|CYBER|PRIVACY|MARKETING|NOTAPPROVED/i))g='Products & Customers';
+else if(c.match(/COMMUNITY|DONATION|STAKEHOLDER|MICROFINANCE/i))g='Community';
+else if(c.match(/TAX/i))g='Tax Transparency';
+groups[g]=groups[g]||[];groups[g].push(i);});
+var order=['ESG Scores','Controversial Activities','Controversies','Recent Controversies','Environment & Climate','Workforce & Social',
+'Governance & Board','Human Rights & Labour','Policies','Business Ethics','Supply Chain','SDG Indicators',
+'Reporting & Standards','Products & Customers','Community','Tax Transparency','Analytic Indicators','Other'];
+var sorted={};order.forEach(function(k){if(groups[k])sorted[k]=groups[k];});
+Object.keys(groups).forEach(function(k){if(!sorted[k])sorted[k]=groups[k];});
+return sorted;
+}
+
+function buildUI(){
+var sc=document.getElementById('secChips');
+var secs=[];var seen={};D.S.forEach(function(s){if(s.s&&s.s!=='Unknown'&&!seen[s.s]){seen[s.s]=1;secs.push(s.s);}});
+secs.sort();
+secs.forEach(function(s){
+var c=document.createElement('span');c.className='chip';c.textContent=s;
+c.onclick=function(){if(secExcl.has(s)){secExcl.delete(s);c.classList.remove('exc');}else{secExcl.add(s);c.classList.add('exc');}};
+sc.appendChild(c);});
+
+var ic=document.getElementById('indChips');
+if(ic){
+var inds=[];var iseen={};D.S.forEach(function(s){if(s.i&&s.i!=='Unknown'&&!iseen[s.i]){iseen[s.i]=1;inds.push(s.i);}});
+inds.sort();
+inds.forEach(function(ind){
+var c=document.createElement('span');c.className='chip';c.textContent=ind;
+c.onclick=function(){if(indExcl.has(ind)){indExcl.delete(ind);c.classList.remove('exc');}else{indExcl.add(ind);c.classList.add('exc');}};
+ic.appendChild(c);
+});}
+
+var nf=document.getElementById('numFilters');
+var nG=groupCols(NI);var nh='';
+for(var gn in nG){var idxs=nG[gn];var isScores=gn==='ESG Scores';
+nh+='<details class="filter-section"'+(isScores?' open':'')+'><summary>'+gn+' ('+idxs.length+')</summary><div class="filter-grid">';
+idxs.forEach(function(i){
+nh+='<div class="filter-item"><span class="fn" onclick="showVarInfo('+i+')" title="'+COLS[i]+'">'+friendlyName(i)+'</span>';
+nh+='<input type="number" id="nmin_'+i+'" placeholder="Min" step="any">';
+nh+='<input type="number" id="nmax_'+i+'" placeholder="Max" step="any"></div>';});
+nh+='</div></details>';}
+nf.innerHTML=nh;
+
+var bf=document.getElementById('boolFilters');
+var bG=groupCols(BI);var bh='';
+for(var bg in bG){var bidxs=bG[bg];
+bh+='<details class="filter-section"><summary>'+bg+' ('+bidxs.length+')</summary><div class="bool-grid">';
+bidxs.forEach(function(i){
+bh+='<div class="bool-item"><input type="checkbox" id="bx_'+i+'" data-i="'+i+'" class="bxcb">';
+bh+='<span onclick="showVarInfo('+i+')" title="'+COLS[i]+'" style="cursor:help;color:var(--t2);border-bottom:1px dotted var(--t3);font-size:.7rem">'+friendlyName(i)+'</span></div>';});
+bh+='</div></details>';}
+bf.innerHTML=bh;
+}
+
+function apply(){
+var ey=String(formYear-1);var sMap={};D.S.forEach(function(s){sMap[s.r]=s;});
+bmkRics=D.S.filter(function(s){var ey2=String(formYear-1);var row=s.d[ey2];
+var mc=row&&row.MC;var hasMc=mc!=null&&isFinite(+mc);
+return D.R[s.r]&&D.R[s.r].length>0&&row&&hasMc;}).map(function(s){return s.r;});
+numThresh={};NI.forEach(function(i){
+var mi=document.getElementById('nmin_'+i),ma=document.getElementById('nmax_'+i);
+if(mi&&mi.value!=='')numThresh[i+'m']=+mi.value;if(ma&&ma.value!=='')numThresh[i+'M']=+ma.value;});
+boolExcl=new Set();document.querySelectorAll('.bxcb:checked').forEach(function(cb){boolExcl.add(+cb.dataset.i);});
+
+pfRics=bmkRics.filter(function(ric){
+var s=sMap[ric];if(!s)return false;if(secExcl.has(s.s))return false;
+if(indExcl.has(s.i))return false;
+var ed=s.d[ey]||{};
+var boolHit=false;boolExcl.forEach(function(bi){var bv=ed[bi];if(bv==null&&FI_SET[bi])bv=false;if(bv===true)boolHit=true;});
+if(boolHit)return false;
+for(var k in numThresh){var idx=+k.slice(0,-1),isMin=k.endsWith('m');var v=ed[idx];
+if(v==null&&ZI_SET[idx])v=0;
+if(isMin){if(v==null||v<numThresh[k])return false;}else{if(v==null||v>numThresh[k])return false;}}
+return true;});
+document.getElementById('nBm').textContent=bmkRics.length;
+document.getElementById('nPf').textContent=pfRics.length;
+document.getElementById('nEx').textContent=bmkRics.length-pfRics.length;
+var pSecs={};pfRics.forEach(function(r){var s=sMap[r];if(s&&s.s)pSecs[s.s]=1;});
+document.getElementById('nSec').textContent=Object.keys(pSecs).length;
+renderTbl();renderScreeningCompare();
+try{renderPerf();}catch(e){console.error('renderPerf',e);}
+try{renderYear();}catch(e){console.error('renderYear',e);}
+try{renderCrisis();}catch(e){console.error('renderCrisis',e);}}
+window.apply=apply;
+
+function buildPortfolio(){apply();var sc=document.getElementById('screenCompare');
+if(sc&&sc.style.display!=='none'){requestAnimationFrame(function(){try{sc.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(_){}});}}
+window.buildPortfolio=buildPortfolio;
+
+function resetAll(){
+secExcl.clear();indExcl.clear();document.querySelectorAll('.chip.exc').forEach(function(c){c.classList.remove('exc');});
+document.querySelectorAll('.bxcb').forEach(function(cb){cb.checked=false;});
+NI.forEach(function(i){var a=document.getElementById('nmin_'+i),b=document.getElementById('nmax_'+i);if(a)a.value='';if(b)b.value='';});
+numThresh={};boolExcl=new Set();apply();}
+window.resetAll=resetAll;
+
+function renderTbl(){
+var ey=String(formYear-1),sMap={};D.S.forEach(function(s){sMap[s.r]=s;});
+var pSet={};pfRics.forEach(function(r){pSet[r]=1;});
+var EI=KNI[0],EE=KNI[1],ES=KNI[2],EG=KNI[3],EC=KNI[4];
+var rows=bmkRics.map(function(ric){var s=sMap[ric],ed=s?s.d[ey]||{}:{};
+function pick(ix){if(ix==null||ix<0)return null;var v=ed[ix]; if(v==null&&ZI_SET[ix])v=0;return v;}
+var con=pick(EC);
+return{ric:ric,nm:s?s.n:ric,sec:s?s.s:'',ind:s?s.i:'',inp:!!pSet[ric],esg:pick(EI),e:pick(EE),s:pick(ES),g:pick(EG),con:con};});
+if(srchTerm)rows=rows.filter(function(r){return r.nm.toLowerCase().indexOf(srchTerm)>=0||r.ric.toLowerCase().indexOf(srchTerm)>=0||r.ind.toLowerCase().indexOf(srchTerm)>=0;});
+if(sortK)rows.sort(function(a,b){var va=a[sortK],vb=b[sortK];if(va==null)return 1;if(vb==null)return-1;
+return typeof va==='string'?va.localeCompare(vb)*sortD:(va-vb)*sortD;});
+document.getElementById('tInfo').textContent='('+rows.length+')';
+var h='<table><thead><tr>';
+[['inp','✓',32],['ric','RIC',72],['nm','Name',185],['sec','Sector',105],
+['esg','ESG',46],['e','E',40],['s','S',40],['g','G',40],['con','Contr',46,'LSEG controversies score (TR.TRESGCControversiesScore or TR.ESGCControversiesScore when present): scale 1–100; 100 = no ESG controversies.']].forEach(function(x){
+var ar=sortK===x[0]?(sortD===1?' ▲':' ▼'):'';
+var t=x[3]?' title="'+x[3]+'"':'';
+h+='<th onclick="doSort(\''+x[0]+'\')" style="min-width:'+x[2]+'px"'+t+'>'+x[1]+ar+'</th>';});
+h+='</tr></thead><tbody>';
+rows.forEach(function(r){
+var op=r.inp?'':'style="opacity:.3"';
+h+='<tr '+op+'><td>'+(r.inp?'<span class="bg bg-g">✓</span>':'<span class="bg bg-r">✕</span>')+'</td>';
+h+='<td class="mn" style="font-size:.66rem">'+r.ric+'</td>';
+h+='<td style="max-width:185px;overflow:hidden;text-overflow:ellipsis">'+r.nm+'</td>';
+h+='<td><span class="bg bg-b">'+(r.sec||'—')+'</span></td>';
+[r.esg,r.e,r.s,r.g,r.con].forEach(function(v){
+if(v==null)h+='<td style="color:var(--t3)">—</td>';
+else{var c=v>=70?'var(--gn)':v>=40?'var(--yl)':'var(--rd)';
+h+='<td class="mn" style="color:'+c+'">'+v.toFixed(1)+'</td>';}});h+='</tr>';});
+h+='</tbody></table>';document.getElementById('tbl').innerHTML=h;}
+function doSort(k){if(sortK===k)sortD*=-1;else{sortK=k;sortD=1;}renderTbl();}
+window.doSort=doSort;
+
+function cmpMcTotal(rics,ey,sMap){
+var t=0;rics.forEach(function(r){var m=(sMap[r].d[ey]||{}).MC;if(m!=null&&isFinite(m))t+=+m;});return t;}
+function cmpTop10Arr(rics,ey,sMap){
+var arr=[];rics.forEach(function(r){var s=sMap[r],mc=(s.d[ey]||{}).MC;if(mc==null||!isFinite(mc))return;arr.push({r:r,nm:s.n,mc:+mc});});
+arr.sort(function(a,b){return b.mc-a.mc;});return arr.slice(0,10);}
+function cmpBuildDist(rics,ey,sMap,keyFn){
+var tw=0,m={};rics.forEach(function(r){var s=sMap[r],mc=(s.d[ey]||{}).MC;if(mc==null||!isFinite(mc))return;mc=+mc;tw+=mc;var k=keyFn(s)||'Unknown';m[k]=(m[k]||0)+mc;});
+return{tw:tw,m:m};}
+function renderCmpTop10(ey,sMap){
+var bTot=cmpMcTotal(bmkRics,ey,sMap),pTot=cmpMcTotal(pfRics,ey,sMap),bRows=cmpTop10Arr(bmkRics,ey,sMap),pRows=cmpTop10Arr(pfRics,ey,sMap);
+var tb=function(rows,tot){
+var h='<table><thead><tr><th>#</th><th>Name</th><th class="mn">MC (bn)</th><th class="mn">Weight</th></tr></thead><tbody>';
+rows.forEach(function(x,i){h+='<tr><td>'+(i+1)+'</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+x.r+'">'+(x.nm||x.r)+'</td>';
+h+='<td class="mn">'+(x.mc/1e9).toFixed(2)+'</td><td class="mn">'+(tot?(100*x.mc/tot).toFixed(2)+'%':'—')+'</td></tr>';});
+h+='</tbody></table>';return h;};
+var left='<div><div class="cmp-subh">Benchmark top 10</div>'+tb(bRows,bTot)+'</div>';
+var right='<div><div class="cmp-subh">Portfolio top 10</div>'+(pfRics.length?tb(pRows,pTot):'<p style="font-size:.72rem;color:var(--t3)">No stocks in portfolio.</p>')+'</div>';
+return '<div class="cmp-grid">'+left+right+'</div>';}
+function renderCmpDist(ey,sMap,keyFn,colTitle){
+var B=cmpBuildDist(bmkRics,ey,sMap,keyFn),P=cmpBuildDist(pfRics,ey,sMap,keyFn);
+var keys={};Object.keys(B.m).forEach(function(k){keys[k]=1});Object.keys(P.m).forEach(function(k){keys[k]=1});
+var arr=Object.keys(keys);
+arr.sort(function(a,b){var pb=B.tw?B.m[b]/B.tw:0,pa=B.tw?B.m[a]/B.tw:0;return pb-pa;});
+var h='<div class="dist-wrap"><table><thead><tr><th>'+colTitle+'</th><th class="mn">BM %</th><th class="mn">PF %</th><th class="mn">Δ (PF−BM)</th></tr></thead><tbody>';
+arr.forEach(function(k){
+var bmMc=B.m[k]||0,pmMc=P.m[k]||0;if(!bmMc&&!pmMc)return;
+var bp=B.tw?100*bmMc/B.tw:0,pp=P.tw?100*pmMc/P.tw:0;
+h+='<tr><td style="max-width:240px;overflow:hidden;text-overflow:ellipsis" title="'+k.replace(/"/g,'&quot;')+'">'+k+'</td>';
+h+='<td class="mn">'+bp.toFixed(2)+'%</td><td class="mn">'+pp.toFixed(2)+'%</td>';
+var d=pp-bp;h+='<td class="mn '+(d>0.15?'pos':d<-0.15?'neg':'')+'">'+(d>0?'+':'')+d.toFixed(2)+'pp</td></tr>';});
+h+='</tbody></table></div>';return h;}
+function setCmpTab(t){cmpScreenTab=t;renderScreeningCompare();}
+window.setCmpTab=setCmpTab;
+function renderScreeningCompare(){
+var mount=document.getElementById('cmpMount'),wrap=document.getElementById('screenCompare');
+if(!mount||!wrap)return;
+var __cmpEy=String(formYear-1);
+if(!bmkRics.length){
+wrap.style.display='block';
+mount.innerHTML='<h3 style="font-size:.88rem;color:var(--a2);margin:0 0 4px">Portfolio vs benchmark</h3>'+
+'<p class="cmp-note" style="color:var(--yl)"><strong>No investable benchmark</strong> for end-'+__cmpEy+': each stock needs monthly returns, an ESG row for that year, and a numeric market cap in <code>stoxx_market_cap_panel.csv</code> (same folder as this page). If the yellow data-warning box above mentions missing market caps, generate or copy that CSV and click <strong>Build Portfolio</strong> again.</p>';
+return;}
+wrap.style.display='block';
+var ey=__cmpEy,sMap={};D.S.forEach(function(s){sMap[s.r]=s;});
+var tab=cmpScreenTab||'cap';
+var h='<h3 style="font-size:.88rem;color:var(--a2);margin:0 0 4px">Portfolio vs benchmark</h3>';
+h+='<p class="cmp-note">Weights use <strong>end-'+ey+'</strong> EUR market capitalisation (same as return weighting). Updates whenever you click <strong>Build Portfolio</strong>.</p>';
+h+='<div class="cmp-tabs">';
+[['cap','Top 10 market cap'],['sec','Sectors'],['industries','Industries'],['cty','Countries']].forEach(function(T){
+h+='<button type="button" class="cmp-tab'+(tab===T[0]?' act':'')+'" onclick="setCmpTab(\''+T[0]+'\')">'+T[1]+'</button>';});
+h+='</div>';
+if(tab==='cap')h+=renderCmpTop10(ey,sMap);
+else if(tab==='sec')h+=renderCmpDist(ey,sMap,function(s){return s.s||'Unknown';},'Sector');
+else if(tab==='industries')h+=renderCmpDist(ey,sMap,function(s){return s.i||'Unknown';},'Industry');
+else h+=renderCmpDist(ey,sMap,function(s){return s.c||'Unknown';},'Country');
+mount.innerHTML=h;}
+
+function getMR(rics,s,e){
+var ey=String(formYear-1);var sMap={};D.S.forEach(function(st){sMap[st.r]=st;});
+var dm={};rics.forEach(function(ric){var rs=D.R[ric];if(!rs)return;
+var st=sMap[ric];var mc=(st&&st.d[ey]&&st.d[ey].MC)?st.d[ey].MC:null;
+if(!mc)return;
+rs.forEach(function(p){var d=p[0],r=p[1];if(d>=s&&d<=e){if(!dm[d])dm[d]={sw:0,tw:0};dm[d].sw+=r*mc;dm[d].tw+=mc;}});});
+return Object.keys(dm).sort().map(function(d){return{d:d,r:dm[d].tw?dm[d].sw/dm[d].tw:0};});}
+function cumR(rs){var c=1;rs.forEach(function(r){c*=(1+r.r);});return(c-1)*100;}
+function annR(rs){if(!rs.length)return 0;var c=1;rs.forEach(function(r){c*=(1+r.r);});var y=rs.length/12;return y>0?(Math.pow(c,1/y)-1)*100:0;}
+function annV(rs){if(rs.length<2)return 0;var v=rs.map(function(r){return r.r;}),m=v.reduce(function(a,b){return a+b;},0)/v.length;
+return Math.sqrt(v.reduce(function(a,b){return a+(b-m)*(b-m);},0)/(v.length-1))*Math.sqrt(12)*100;}
+function sha(rs){var a=annR(rs),v=annV(rs);return v?a/v:0;}
+function sor(rs){if(rs.length<2)return 0;var neg=rs.map(function(r){return r.r;}).filter(function(v){return v<0;});
+if(!neg.length)return annR(rs)>0?99:0;var dd=Math.sqrt(neg.reduce(function(a,b){return a+b*b;},0)/neg.length)*Math.sqrt(12)*100;return dd?annR(rs)/dd:0;}
+function mdd(rs){var pk=1,mx=0,c=1;rs.forEach(function(r){c*=(1+r.r);if(c>pk)pk=c;var d=(pk-c)/pk;if(d>mx)mx=d;});return mx*100;}
+function ab(pf,bm){var bmap={};bm.forEach(function(r){bmap[r.d]=r.r;});var ps=[];
+pf.forEach(function(r){if(bmap[r.d]!=null)ps.push([r.r,bmap[r.d]]);});
+if(ps.length<3)return{a:0,b:1};var n=ps.length,sx=0,sy=0,sxy=0,sx2=0;
+ps.forEach(function(p){sx+=p[1];sy+=p[0];sxy+=p[0]*p[1];sx2+=p[1]*p[1];});
+var bt=(n*sxy-sx*sy)/(n*sx2-sx*sx||1),al=(sy-bt*sx)/n;return{a:al*1200,b:bt};}
+function fp(v){return v==null||isNaN(v)?'—':(v>=0?'+':'')+v.toFixed(2)+'%';}
+function fn(v){return v==null||isNaN(v)?'—':v.toFixed(2);}
+function cp(v){return v>=0?'pos':'neg';}
+
+function renderPerf(){
+var sp=formYear+'-01',ep='2025-12',spr='2015-01',epr=(formYear-1)+'-12';
+var bpo=getMR(bmkRics,sp,ep),ppo=getMR(pfRics,sp,ep);
+var bpr=getMR(bmkRics,spr,epr),ppr=getMR(pfRics,spr,epr);
+function sub(rs,yrs){if(!rs.length)return[];var last=rs[rs.length-1].d;
+var parts=last.split('-'),y=+parts[0]-yrs,m=parts[1];var cut=String(y)+'-'+m;return rs.filter(function(r){return r.d>=cut;});}
+var pds=[{l:'Full Post',p:ppo,b:bpo},{l:'1Y',p:sub(ppo,1),b:sub(bpo,1)},{l:'3Y',p:sub(ppo,3),b:sub(bpo,3)},{l:'5Y',p:sub(ppo,5),b:sub(bpo,5)}];
+var h='<div class="cd"><h2>Post-Formation ('+formYear+'–2025) · '+pfRics.length+' vs '+bmkRics.length+' benchmark</h2>';
+h+='<div class="scroll-x"><table><thead><tr><th>Metric</th>';
+pds.forEach(function(p){h+='<th colspan=2>'+p.l+'</th>';});
+h+='</tr><tr><th></th>';pds.forEach(function(){h+='<th style="color:var(--a2)">PF</th><th style="color:var(--t3)">BMK</th>';});
+h+='</tr></thead><tbody>';
+[{l:'Cumulative Return',f:cumR},{l:'Ann. Return',f:annR},{l:'Ann. Volatility',f:annV},
+{l:'Sharpe',f:sha},{l:'Sortino',f:sor},{l:'Max Drawdown',f:function(r){return -mdd(r);}}].forEach(function(mt){
+h+='<tr><td><strong>'+mt.l+'</strong></td>';
+pds.forEach(function(p){var pv=mt.f(p.p),bv=mt.f(p.b);
+h+='<td class="mn '+cp(pv)+'">'+fp(pv)+'</td><td class="mn" style="color:var(--t3)">'+fp(bv)+'</td>';});h+='</tr>';});
+h+='<tr><td><strong>Alpha</strong></td>';pds.forEach(function(p){var r=ab(p.p,p.b);h+='<td class="mn '+cp(r.a)+'">'+fp(r.a)+'</td><td class="mn" style="color:var(--t3)">—</td>';});
+h+='</tr><tr><td><strong>Beta</strong></td>';pds.forEach(function(p){var r=ab(p.p,p.b);h+='<td class="mn">'+fn(r.b)+'</td><td class="mn" style="color:var(--t3)">1.00</td>';});
+h+='</tr></tbody></table></div></div>';
+
+h+='<div class="cd"><h2>Pre-Formation (2015–'+(formYear-1)+')</h2>';
+h+='<div class="scroll-x"><table><thead><tr><th>Metric</th><th style="color:var(--a2)">PF</th><th style="color:var(--t3)">BMK</th></tr></thead><tbody>';
+[{l:'Cumulative Return',p:fp(cumR(ppr)),b:fp(cumR(bpr))},{l:'Ann. Return',p:fp(annR(ppr)),b:fp(annR(bpr))},
+{l:'Ann. Volatility',p:fp(annV(ppr)),b:fp(annV(bpr))},{l:'Sharpe',p:fn(sha(ppr)),b:fn(sha(bpr))},
+{l:'Sortino',p:fn(sor(ppr)),b:fn(sor(bpr))},{l:'Max Drawdown',p:fp(-mdd(ppr)),b:fp(-mdd(bpr))},
+{l:'Alpha',p:fp(ab(ppr,bpr).a),b:'—'},{l:'Beta',p:fn(ab(ppr,bpr).b),b:'1.00'}
+].forEach(function(r){h+='<tr><td><strong>'+r.l+'</strong></td><td class="mn">'+r.p+'</td><td class="mn" style="color:var(--t3)">'+r.b+'</td></tr>';});
+h+='</tbody></table></div></div>';
+
+h+='<div class="cd"><h2>Cumulative Growth of €100</h2>';
+h+='<p style="font-size:.7rem;color:var(--t2);margin:4px 0 8px">Wealth index in <strong>EUR</strong> (same monthly returns as the tables, from <code>stoxx_data.json</code>). <strong>Pre-formation</strong> ('+spr+'–'+(formYear-1)+'-12): both series start at €100. <strong>Post-formation</strong> ('+formYear+'-01–'+ep+'): both series are <strong>rebased to €100</strong> at the formation date so the paths match the Post-Formation cumulative-return column. There is an intentional gap at the marker (levels need not match across the break).</p>';
+h+='<div style="position:relative"><canvas id="ccv"></canvas></div>';
+h+='<div class="lgn"><div class="lgn-i"><div class="lgn-d" style="background:var(--ac)"></div>Portfolio (ESG screen)</div>';
+h+='<div class="lgn-i"><div class="lgn-d" style="background:#94a3b8"></div>Benchmark</div></div></div>';
+h+=sectorPerf();
+document.getElementById('perfC').innerHTML=h;
+var pFull=getMR(pfRics,spr,ep),bFull=getMR(bmkRics,spr,ep);
+chartData.cum={pFull:pFull,bFull:bFull};
+if(document.getElementById('p-perf').classList.contains('act'))setTimeout(function(){drawCum(pFull,bFull);},50);
+}
+
+function sectorPerf(){
+var sp=formYear+'-01',ep='2025-12';var sMap={};D.S.forEach(function(s){sMap[s.r]=s;});
+
+var secs=[];var seen={};D.S.forEach(function(s){if(s.s&&s.s!=='Unknown'&&!seen[s.s]){seen[s.s]=1;secs.push(s.s);}});secs.sort();
+var h='<div class="cd"><h2>Sector Performance (Post-Formation)</h2><div class="scroll-x"><table><thead>';
+h+='<tr><th>Sector</th><th>#PF</th><th>#BMK</th><th>PF Cum</th><th>BMK Cum</th><th>Excess</th><th>PF Vol</th><th>BMK Vol</th></tr></thead><tbody>';
+secs.forEach(function(sec){
+var sb=bmkRics.filter(function(r){return sMap[r]&&sMap[r].s===sec;});
+var sp2=pfRics.filter(function(r){return sMap[r]&&sMap[r].s===sec;});
+if(!sb.length)return;var br=getMR(sb,sp,ep),pr=sp2.length?getMR(sp2,sp,ep):[];
+var bc=cumR(br),pc=pr.length?cumR(pr):null,ex=pc!=null?pc-bc:null;
+h+='<tr style="font-weight:600"><td><span class="bg bg-b">'+sec+'</span></td><td class="mn">'+sp2.length+'</td><td class="mn">'+sb.length+'</td>';
+h+='<td class="mn '+(pc!=null?cp(pc):'')+'">'+(pc!=null?fp(pc):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(bc)+'</td>';
+h+='<td class="mn" style="font-weight:700;'+(ex!=null?'color:var(--'+(ex>=0?'gn':'rd')+')':'')+'">'+(ex!=null?fp(ex):'—')+'</td>';
+h+='<td class="mn">'+(pr.length?fp(annV(pr)):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(annV(br))+'</td></tr>';
+var indMap={};bmkRics.forEach(function(r){var s2=sMap[r];if(s2&&s2.s===sec&&s2.i&&s2.i!=='Unknown'){indMap[s2.i]=1;}});
+var inds=Object.keys(indMap).sort();
+inds.forEach(function(ind){
+var isb=bmkRics.filter(function(r){return sMap[r]&&sMap[r].i===ind;});
+var isp=pfRics.filter(function(r){return sMap[r]&&sMap[r].i===ind;});
+if(!isb.length)return;var ibr=getMR(isb,sp,ep),ipr=isp.length?getMR(isp,sp,ep):[];
+var ibc=cumR(ibr),ipc=ipr.length?cumR(ipr):null,iex=ipc!=null?ipc-ibc:null;
+h+='<tr style="font-size:.68rem"><td style="padding-left:18px;color:var(--t2)">↳ '+ind+'</td><td class="mn">'+isp.length+'</td><td class="mn">'+isb.length+'</td>';
+h+='<td class="mn '+(ipc!=null?cp(ipc):'')+'">'+(ipc!=null?fp(ipc):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(ibc)+'</td>';
+h+='<td class="mn" style="'+(iex!=null?'color:var(--'+(iex>=0?'gn':'rd')+')':'')+'">'+(iex!=null?fp(iex):'—')+'</td>';
+h+='<td class="mn">'+(ipr.length?fp(annV(ipr)):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(annV(ibr))+'</td></tr>';
+});
+});
+h+='</tbody></table></div></div>';return h;}
+
+function drawCum(pfFull,bmFull){
+var cv=document.getElementById('ccv');if(!cv)return;
+var W=cv.parentElement.clientWidth,H=340;
+var dpr=window.devicePixelRatio||1;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+var ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+var P={t:30,r:20,b:36,l:58};
+var preMo=(formYear-1)+'-12',fd=formYear+'-01';
+function splitReturns(rs){
+var pre=[],post=[];
+rs.forEach(function(r){
+if(r.d<=preMo)pre.push(r);
+if(r.d>=fd)post.push(r);
+});
+return{pre:pre,post:post};}
+function cs(rs){if(!rs.length)return[];var c=100,out=[{d:rs[0].d,v:100}];
+rs.forEach(function(r){c*=(1+r.r);out.push({d:r.d,v:c});});return out;}
+var sp=pfFull.length?splitReturns(pfFull):{pre:[],post:[]};
+var sb=bmFull.length?splitReturns(bmFull):{pre:[],post:[]};
+var series=[];
+if(sp.pre.length)series.push({p:cs(sp.pre),c:'rgba(59,130,246,.45)',w:2,dash:[]});
+if(sb.pre.length)series.push({p:cs(sb.pre),c:'rgba(148,163,184,.45)',w:2,dash:[]});
+if(sp.post.length)series.push({p:cs(sp.post),c:'#3b82f6',w:2.5,dash:[]});
+if(sb.post.length)series.push({p:cs(sb.post),c:'#94a3b8',w:2,dash:[]});
+var allV=[];series.forEach(function(s){s.p.forEach(function(pt){allV.push(pt.v);});});
+if(!allV.length)return;
+var mn=Math.min.apply(null,allV)*.92,mx=Math.max.apply(null,allV)*1.06;
+var allD=[],dSet={};series.forEach(function(s){s.p.forEach(function(pt){if(!dSet[pt.d]){dSet[pt.d]=1;allD.push(pt.d);}});});allD.sort();
+if(!allD.length)return;
+var dIdx={};allD.forEach(function(d,i){dIdx[d]=i;});
+var pw=W-P.l-P.r,ph=H-P.t-P.b;
+function xS(d){return P.l+(dIdx[d]/(allD.length-1||1))*pw;}
+function yS(v){return H-P.b-(v-mn)/(mx-mn||1)*ph;}
+
+ctx.strokeStyle='rgba(42,53,80,.4)';ctx.lineWidth=.5;
+for(var i=0;i<6;i++){var y=P.t+i*ph/5;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+var val=mx-(i/5)*(mx-mn);ctx.fillStyle='#64748b';ctx.font='10px "DM Sans"';ctx.textAlign='right';ctx.fillText(val.toFixed(0),P.l-5,y+4);}
+
+if(dIdx[fd]!=null){var fx=xS(fd);
+ctx.strokeStyle='rgba(245,158,11,.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+ctx.beginPath();ctx.moveTo(fx,P.t);ctx.lineTo(fx,H-P.b);ctx.stroke();ctx.setLineDash([]);
+ctx.fillStyle='#f59e0b';ctx.font='600 10px "DM Sans"';ctx.textAlign='center';ctx.fillText('Formation '+formYear,fx,P.t-8);}
+
+ctx.fillStyle='#64748b';ctx.font='9px "DM Sans"';ctx.textAlign='center';
+var step=Math.max(1,Math.floor(allD.length/12));
+for(var i=0;i<allD.length;i+=step){ctx.fillText(allD[i],xS(allD[i]),H-P.b+15);}
+
+series.forEach(function(s){
+ctx.strokeStyle=s.c;ctx.lineWidth=s.w;ctx.setLineDash(s.dash||[]);ctx.beginPath();
+s.p.forEach(function(pt,i){var x=xS(pt.d),y=yS(pt.v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+ctx.stroke();ctx.setLineDash([]);
+});
+var pfPostPts=sp.post.length?cs(sp.post):[],bmPostPts=sb.post.length?cs(sb.post):[];
+function labelLast(pts,col,dy){
+if(!pts.length)return;
+var last=pts[pts.length-1];
+var v=Number(last.v);
+if(!isFinite(v))return;
+var lab='€'+Math.round(v).toLocaleString('fr-FR')+' EUR';
+ctx.fillStyle=col;ctx.font='600 9px "JetBrains Mono"';
+var x=xS(last.d),y=yS(last.v)+(dy||0);
+ctx.textAlign='right';
+var pad=8,tx=Math.min(x-pad,W-P.r-pad);
+var tw=ctx.measureText(lab).width;
+if(tx-tw<P.l+2){ctx.textAlign='left';tx=Math.max(P.l+2,x+pad);if(tx+tw>W-P.r-2)tx=W-P.r-tw-2;}
+ctx.fillText(lab,tx,y+3);}
+if(pfPostPts.length)labelLast(pfPostPts,'#60a5fa',-11);
+else if(sp.pre.length)labelLast(cs(sp.pre),'#60a5fa',-11);
+if(bmPostPts.length)labelLast(bmPostPts,'#cbd5e1',10);
+else if(sb.pre.length)labelLast(cs(sb.pre),'#cbd5e1',10);
+}
+
+function renderYear(){
+var yrsPost=[];for(var y=formYear;y<=2025;y++)yrsPost.push(y);
+var yrsPre=[];for(var y=2015;y<formYear;y++)yrsPre.push(y);
+function yrD(rics,yrs){return yrs.map(function(y){var r=getMR(rics,y+'-01',y+'-12');return{y:y,r:cumR(r)};});}
+var pfPo=yrD(pfRics,yrsPost),bmPo=yrD(bmkRics,yrsPost);
+var pfPr=yrD(pfRics,yrsPre),bmPr=yrD(bmkRics,yrsPre);
+var h='<div class="cd"><h2>Post-Formation Annual Returns ('+formYear+'–2025)</h2>';
+h+='<div style="position:relative"><canvas id="barPo"></canvas></div>';
+h+='<div class="lgn"><div class="lgn-i"><div class="lgn-d" style="background:var(--ac)"></div>Portfolio</div>';
+h+='<div class="lgn-i"><div class="lgn-d" style="background:#64748b"></div>Benchmark</div></div></div>';
+h+='<div class="cd"><h2>Pre-Formation Annual Returns (2015–'+(formYear-1)+')</h2>';
+h+='<div style="position:relative"><canvas id="barPr"></canvas></div>';
+h+='<div class="lgn"><div class="lgn-i"><div class="lgn-d" style="background:var(--ac)"></div>Portfolio</div>';
+h+='<div class="lgn-i"><div class="lgn-d" style="background:#64748b"></div>Benchmark</div></div></div>';
+document.getElementById('yearC').innerHTML=h;
+chartData.bar={pfPo:pfPo,bmPo:bmPo,pfPr:pfPr,bmPr:bmPr};
+if(document.getElementById('p-year').classList.contains('act'))setTimeout(function(){drawBar('barPo',pfPo,bmPo);drawBar('barPr',pfPr,bmPr);},50);
+}
+
+function drawBar(id,pfD,bmD){
+var cv=document.getElementById(id);if(!cv||!pfD.length)return;
+var W=cv.parentElement.clientWidth,H=300;
+var dpr=window.devicePixelRatio||1;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+var ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+var P={t:20,r:20,b:40,l:54};
+var n=pfD.length;if(!n)return;
+var allV=pfD.map(function(d){return d.r;}).concat(bmD.map(function(d){return d.r;}));
+var mx=Math.max.apply(null,allV.concat([5]))*1.2;
+var mn=Math.min.apply(null,allV.concat([-5]))*1.2;
+var rng=mx-mn||1;
+var pw=W-P.l-P.r,ph=H-P.t-P.b;
+function yS(v){return P.t+(mx-v)/rng*ph;}
+var y0=yS(0);
+var gw=pw/n;var bw=Math.min(gw*.3,35);
+
+ctx.fillStyle='#64748b';ctx.font='9px "DM Sans"';ctx.textAlign='right';
+for(var i=0;i<6;i++){var v=mn+i*rng/5;var y=yS(v);
+ctx.strokeStyle='rgba(42,53,80,.3)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();
+ctx.fillText(v.toFixed(0)+'%',P.l-4,y+3);}
+
+ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P.l,y0);ctx.lineTo(W-P.r,y0);ctx.stroke();
+
+pfD.forEach(function(d,i){
+var cx=P.l+i*gw+gw/2;
+var bm=bmD[i];
+var by=yS(bm.r);
+ctx.fillStyle='rgba(100,116,139,.3)';
+ctx.fillRect(cx-bw-1,Math.min(by,y0),bw,Math.abs(by-y0));
+var py=yS(d.r);
+ctx.fillStyle=d.r>=0?'rgba(59,130,246,.75)':'rgba(239,68,68,.75)';
+ctx.fillRect(cx+1,Math.min(py,y0),bw,Math.abs(py-y0));
+ctx.fillStyle='#94a3b8';ctx.font='10px "DM Sans"';ctx.textAlign='center';
+ctx.fillText(d.y,cx,H-P.b+16);
+ctx.font='600 9px "JetBrains Mono"';
+ctx.fillStyle=d.r>=0?'#60a5fa':'#f87171';
+var ly=d.r>=0?Math.min(py,y0)-5:Math.max(py,y0)+12;
+ctx.fillText(d.r.toFixed(1)+'%',cx,ly);
+ctx.fillStyle='rgba(148,163,184,.6)';ctx.font='8px "JetBrains Mono"';
+var bly=bm.r>=0?Math.min(by,y0)-5:Math.max(by,y0)+12;
+ctx.fillText(bm.r.toFixed(1),cx-bw/2,bly);
+});
+}
+
+function renderCrisis(){
+var h='<div class="cd"><h2>Performance During Crisis Periods</h2>';
+h+='<p style="font-size:.73rem;color:var(--t2);margin-bottom:10px">Based on monthly returns in stoxx_data.json (Jan 2015–Dec 2025).</p>';
+h+='<div class="scroll-x"><table><thead><tr>';
+h+='<th>Crisis</th><th>Period</th><th>Mo.</th><th>PF Cum</th><th>BMK Cum</th><th>Excess</th><th>PF Vol</th><th>BMK Vol</th><th>PF MDD</th><th>BMK MDD</th>';
+h+='</tr></thead><tbody>';
+CRISES.forEach(function(c){
+var pr=getMR(pfRics,c.s,c.e),br=getMR(bmkRics,c.s,c.e);
+if(!br.length){h+='<tr><td><strong>'+c.n+'</strong><br><span style="font-size:.6rem;color:var(--t3)">'+c.d+'</span></td>';
+h+='<td class="mn">'+c.s+'→'+c.e+'</td><td>0</td><td colspan="7" style="color:var(--t3)">No data</td></tr>';return;}
+var pc=pr.length?cumR(pr):null,bc=cumR(br),ex=pc!=null?pc-bc:null;
+h+='<tr><td><strong>'+c.n+'</strong><br><span style="font-size:.6rem;color:var(--t3)">'+c.d+'</span></td>';
+h+='<td class="mn" style="font-size:.66rem">'+c.s+' → '+c.e+'</td>';
+h+='<td class="mn">'+br.length+'</td>';
+h+='<td class="mn '+(pc!=null?cp(pc):'')+'">'+(pc!=null?fp(pc):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(bc)+'</td>';
+h+='<td class="mn" style="font-weight:700;'+(ex!=null?'color:var(--'+(ex>=0?'gn':'rd')+')':'')+'">'+(ex!=null?fp(ex):'—')+'</td>';
+h+='<td class="mn">'+(pr.length?fp(annV(pr)):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(annV(br))+'</td>';
+h+='<td class="mn" style="color:var(--rd)">'+(pr.length?fp(-mdd(pr)):'—')+'</td>';
+h+='<td class="mn" style="color:var(--t3)">'+fp(-mdd(br))+'</td></tr>';
+});
+h+='</tbody></table></div></div>';
+document.getElementById('crisisC').innerHTML=h;
+}
+
+window.addEventListener('resize',function(){
+if(chartData.cum&&document.getElementById('p-perf').classList.contains('act')){drawCum(chartData.cum.pFull,chartData.cum.bFull);}
+if(chartData.bar&&document.getElementById('p-year').classList.contains('act')){drawBar('barPo',chartData.bar.pfPo,chartData.bar.bmPo);drawBar('barPr',chartData.bar.pfPr,chartData.bar.bmPr);}
+});
+
+function saveConfig(){
+  var cfg={_version:3,_tool:'EURO STOXX 600 ESG Portfolio Builder (Value-Weighted EUR)',_saved:new Date().toISOString(),
+    formationYear:formYear,sectorExclusions:Array.from(secExcl),industryExclusions:Array.from(indExcl),
+    booleanExclusions:Array.from(boolExcl).map(function(i){return COLS[i];}),numericFilters:{}};
+  NI.forEach(function(i){var mi=document.getElementById('nmin_'+i),ma=document.getElementById('nmax_'+i);
+    var obj={};if(mi&&mi.value!=='')obj.min=+mi.value;if(ma&&ma.value!=='')obj.max=+ma.value;
+    if(Object.keys(obj).length)cfg.numericFilters[COLS[i]]=obj;});
+  cfg._summary={benchmarkStocks:bmkRics.length,portfolioStocks:pfRics.length,excludedStocks:bmkRics.length-pfRics.length};
+  var text=JSON.stringify(cfg,null,2);var blob=new Blob([text],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='esg_portfolio_'+formYear+'_'+new Date().toISOString().slice(0,10)+'.txt';a.click();URL.revokeObjectURL(a.href);}
+window.saveConfig=saveConfig;
+
+function loadConfig(event){var file=event.target.files[0];if(!file)return;
+  var reader=new FileReader();reader.onload=function(e){try{var cfg=JSON.parse(e.target.result);
+    if(!cfg._version){alert('Invalid config file.');return;}
+    resetAll();
+    if(cfg.formationYear){formYear=cfg.formationYear;document.getElementById('fy').value=formYear;}
+    if(cfg.sectorExclusions){cfg.sectorExclusions.forEach(function(s){secExcl.add(s);});
+      document.querySelectorAll('#secChips .chip').forEach(function(c){if(secExcl.has(c.textContent))c.classList.add('exc');});}
+    if(cfg.industryExclusions){cfg.industryExclusions.forEach(function(s){indExcl.add(s);});
+      document.querySelectorAll('#indChips .chip').forEach(function(c){if(indExcl.has(c.textContent))c.classList.add('exc');});}
+    if(cfg.booleanExclusions){var colMap={};COLS.forEach(function(c,i){colMap[c]=i;});
+      cfg.booleanExclusions.forEach(function(cn){var idx=colMap[cn];if(idx!=null){boolExcl.add(idx);
+        var cb=document.getElementById('bx_'+idx);if(cb)cb.checked=true;}});}
+    if(cfg.numericFilters){var colMap={};COLS.forEach(function(c,i){colMap[c]=i;});
+      for(var cn in cfg.numericFilters){var idx=colMap[cn];if(idx==null)continue;var f=cfg.numericFilters[cn];
+        if(f.min!=null){var el=document.getElementById('nmin_'+idx);if(el)el.value=f.min;}
+        if(f.max!=null){var el=document.getElementById('nmax_'+idx);if(el)el.value=f.max;}}}
+    apply();alert('Configuration loaded: '+(cfg._summary?cfg._summary.portfolioStocks+' stocks in portfolio':'OK'));
+  }catch(err){alert('Error reading config: '+err.message);}};
+  reader.readAsText(file);event.target.value='';}
+window.loadConfig=loadConfig;
+</script>
+</body>
+</html>
